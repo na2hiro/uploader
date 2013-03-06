@@ -1,0 +1,77 @@
+<body>
+	<div dropzone="copy" id="drop" style="width:100%;height:100%;">
+		<ul id="progresslist"></ul>
+	</div>
+
+<script>
+var drop = document.getElementById("drop");
+drop.addEventListener("dragover", function(e){
+	e.preventDefault()
+});
+drop.addEventListener("drop",function(ev){
+	console.log(ev)
+	ev.preventDefault();
+	for(var i=0;i<ev.dataTransfer.items.length;i++){
+		var data=ev.dataTransfer.items[i];
+		
+		if(data.kind=="file"){
+			var file = data.getAsFile();
+			start(file);
+		}
+	}
+});
+
+var chunksize=1024*1024;
+var button = document.getElementById("up");
+var list=document.getElementById("progresslist");
+//button.addEventListener("click",start);
+function start(file){
+	var offset=0;
+//	file=document.getElementsByTagName("input")[0].files[0];
+	var filesize=file.size;
+	var ws = new WebSocket("ws://localhost:30000");
+	var mode=0;
+	ws.onmessage=function(data){
+		if(mode==0){
+			offset=JSON.parse(data.data);
+			console.log("offset",offset)
+			mode++;
+			send();
+		}else{
+			if(data.data=="ok")send();
+		}
+	};
+
+	var progress = document.createElement("progress");
+	progress.value=0;
+ 
+	var li = document.createElement("li");
+	list.appendChild(li);
+	li.appendChild(progress);
+	li.appendChild(document.createTextNode(file.name+"("+file.size+")"));
+	function send(){
+		progress.value=offset/filesize;
+		console.log(offset, "/", filesize);
+		if(offset==filesize){
+			ws.close();
+			return;
+		}
+		if(offset+chunksize>filesize){
+			ws.send(file.slice(offset, filesize))
+			offset=filesize;
+		}else{
+			ws.send(file.slice(offset, offset+chunksize))
+			offset+=chunksize;
+		}
+	}
+	ws.onopen = function(){
+		console.log("start");
+		ws.send(JSON.stringify({name:file.name, size:file.size}));
+	};
+	ws.onclose = function(){
+		console.log("closed")
+	};
+};
+
+</script>
+</body>
