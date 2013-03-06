@@ -11,12 +11,18 @@ drop.addEventListener("dragover", function(e){
 drop.addEventListener("drop",function(ev){
 	console.log(ev)
 	ev.preventDefault();
-	for(var i=0;i<ev.dataTransfer.items.length;i++){
-		var data=ev.dataTransfer.items[i];
-		
-		if(data.kind=="file"){
-			var file = data.getAsFile();
-			start(file);
+	if(ev.dataTransfer.items){
+		for(var i=0;i<ev.dataTransfer.items.length;i++){
+			var data=ev.dataTransfer.items[i];
+
+			if(data.kind=="file"){
+				var file = data.getAsFile();
+				start(file);
+			}
+		}
+	}else{
+		for(var i=0;i<ev.dataTransfer.files.length;i++){
+			start(ev.dataTransfer.files[i]);
 		}
 	}
 });
@@ -59,6 +65,7 @@ function start(file){
 			ws.close();
 			return;
 		}
+		console.log("file toha", file)
 		if(offset+chunksize>filesize){
 			ws.send(file.slice(offset, filesize))
 			offset=filesize;
