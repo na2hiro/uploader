@@ -1,5 +1,6 @@
 var ws = require('websocket.io'),
-	app=require('express')(),
+	express=require('express');
+	app=express(),
 	httpServer = require('http').createServer(app),
 	server = ws.attach(httpServer);
 var fs = require('fs');
@@ -7,6 +8,7 @@ httpServer.listen(30000);
 app.get('/', function(req, res){
 	res.sendfile('index.html');
 });
+app.use(express.static('files'));
 server.on('connection', function(socket){
 	var mode=0;
 

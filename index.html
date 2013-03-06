@@ -48,11 +48,14 @@ function start(file){
 	var li = document.createElement("li");
 	list.appendChild(li);
 	li.appendChild(progress);
-	li.appendChild(document.createTextNode(file.name+"("+file.size+")"));
+	var a = document.createElement("a");
+	a.appendChild(document.createTextNode(file.name+"("+file.size+")"));
+	li.appendChild(a)
 	function send(){
 		progress.value=offset/filesize;
 		console.log(offset, "/", filesize);
 		if(offset==filesize){
+			a.href="/"+file.size+"_"+file.name;
 			ws.close();
 			return;
 		}
