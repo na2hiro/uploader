@@ -65,6 +65,7 @@ function start(file){
 			ws.close();
 			return;
 		}
+		if(!file.slice)file.slice=file.webkitSlice;//webkit vendor prefix
 		console.log("file toha", file)
 		if(offset+chunksize>filesize){
 			ws.send(file.slice(offset, filesize))
