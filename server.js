@@ -12,7 +12,8 @@ app.use(express.static('files'));
 server.on('connection', function(socket){
 	var mode=0;
 
-	var stream;	console.log("connection")
+	var stream;
+	console.log("connection");
 	socket.on('message', function(data){
 		if(mode==0){
 			mode++;
@@ -23,7 +24,6 @@ server.on('connection', function(socket){
 				var size = dat.size
 				var path = "files/"+size+"_"+name;
 				var info=fs.stat(path, function(err, info){
-					console.log("info",info);
 					var offset=0;
 					if(!err){
 						console.log("resume up");
@@ -33,7 +33,7 @@ server.on('connection', function(socket){
 						console.log("normal up");
 						stream = fs.createWriteStream(path, {flags:"w"});
 					}
-					console.log("send offset?", offset)
+					console.log("send offset", offset)
 					socket.send(JSON.stringify(offset));
 				});
 			}catch(e){
@@ -50,6 +50,6 @@ server.on('connection', function(socket){
 	});
 	socket.on('close', function(){
 		console.log("close");
-		stream ? stream.end() : "";
+		if(stream) stream.end();
 	});
 });

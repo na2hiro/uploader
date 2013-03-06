@@ -27,13 +27,10 @@ drop.addEventListener("drop",function(ev){
 	}
 });
 
-var chunksize=1024*1024;
-var button = document.getElementById("up");
+var chunksize=1024*1024;// bytesごとにup
 var list=document.getElementById("progresslist");
-//button.addEventListener("click",start);
 function start(file){
 	var offset=0;
-//	file=document.getElementsByTagName("input")[0].files[0];
 	var filesize=file.size;
 	var ws = new WebSocket("ws://"+location.host);
 	var mode=0;
@@ -66,7 +63,7 @@ function start(file){
 			return;
 		}
 		if(!file.slice)file.slice=file.webkitSlice;//webkit vendor prefix
-		console.log("file toha", file)
+		console.log("file:", file)
 		if(offset+chunksize>filesize){
 			ws.send(file.slice(offset, filesize))
 			offset=filesize;
