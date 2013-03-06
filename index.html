@@ -29,7 +29,7 @@ function start(file){
 	var offset=0;
 //	file=document.getElementsByTagName("input")[0].files[0];
 	var filesize=file.size;
-	var ws = new WebSocket("ws://localhost:30000");
+	var ws = new WebSocket("ws://"+location.host);
 	var mode=0;
 	ws.onmessage=function(data){
 		if(mode==0){
